@@ -6,6 +6,14 @@ const loadData = require("./data/loads.json");
 var messageData = require("./data/messages.json");
 const fs = require("fs")
 
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
 app.get("/authenticate/:token", (req, res) => {
     var token = req.params.token
     let user = userData.filter(function(item) { return item.api_token === token; })
@@ -14,6 +22,19 @@ app.get("/authenticate/:token", (req, res) => {
 
 app.get("/loads", (req, res) => {
     res.send(loadData)
+})
+
+app.get('/db', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM test_table');
+        const results = { 'results': (result) ? result.rows : null};
+        res.render('pages/db', results );
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+    }
 })
 
 app.put("/messages/:handle", (req, res) => {
