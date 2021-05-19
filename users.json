@@ -1,15 +1,32 @@
-{
-    "api_token": "ddb56eb8-1b39-11e5-9c63-f9bd05003d3f",
-    "full_name": "Ted Theodore Logan",
-    "web_token": "aeiou",
-    "dashboard": {
-    "logo_ref": "private/soothing_whale",
-    "dashboard_items": []
+[
+    {
+        "api_token": "ddb56eb8-1b39-11e5-9c63-f9bd05003d3f",
+        "full_name": "Ted Theodore Logan",
+        "web_token": "aeiou",
+        "dashboard": {
+        "logo_ref": "private/soothing_whale",
+        "dashboard_items": []
+        },
+        "menu": {
+        "menu_items": []
+        },
+        "custom": {
+        "My Special Property": "Some value."
+        }
     },
-    "menu": {
-    "menu_items": []
-    },
-    "custom": {
-    "My Special Property": "Some value."
+    {
+        "api_token": "ddb54f64-45d2-1234-ccc4-f9bdhk8453f",
+        "full_name": "John Smith",
+        "web_token": "abcde",
+        "dashboard": {
+        "logo_ref": "private/soothing_whale",
+        "dashboard_items": []
+        },
+        "menu": {
+        "menu_items": []
+        },
+        "custom": {
+        "My Special Property": "A value."
+        }
     }
-}
+]
