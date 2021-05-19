@@ -10,7 +10,9 @@
   "author": "Carson Wallace",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "knex": "^0.95.6",
+    "pg": "^8.6.0"
   },
   "engines": {
     "node": "14.17.0"
