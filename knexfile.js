@@ -9,6 +9,10 @@ module.exports = {
         migrations: {
             tablename: 'knex_migrations',
             directory: './migrations'
-        }
+        },
+        seeds: {
+            directory: './seeds'
+        },
+
     }
 }
