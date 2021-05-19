@@ -8,10 +8,10 @@ const fs = require("fs")
 
 const { Pool } = require('pg');
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
     rejectUnauthorized: false
-  }
+    }
 });
 
 app.get("/authenticate/:token", (req, res) => {
@@ -30,7 +30,7 @@ app.get('/db', async (req, res) => {
         const result = await client.query('SELECT * FROM loads');
         const results = { 'results': (result) ? result.rows : null};
         //res.render('pages/db', results );
-        res.json({ results: results });
+        res.json(results);
         client.release();
     } catch (err) {
         console.error(err);
