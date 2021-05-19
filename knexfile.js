@@ -8,7 +8,7 @@ module.exports = {
         },
         migrations: {
             tablename: 'knex_migrations',
-            directory: './app/migrations'
+            directory: './migrations'
         }
     }
 }
