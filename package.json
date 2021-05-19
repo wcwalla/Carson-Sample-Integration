@@ -1,0 +1,18 @@
+{
+  "name": "carsondemoservice",
+  "version": "1.0.0",
+  "description": "Carson Wallace's sample client integration service for Eleos Technologies",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carson Wallace",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "engines": {
+    "node": "14.17.0"
+  }
+}
