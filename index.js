@@ -3,7 +3,6 @@ const app = express();
 let port = process.env.PORT || 3000;
 
 const userData = require("./data/users.json");
-const loadData = require("./data/loads.json");
 var messageData = require("./data/messages.json");
 
 const fs = require("fs")
@@ -34,7 +33,7 @@ app.get("/authenticate/:token", (req, res) => {
 
 app.get('/loads', async (req, res) => {
 
-    if (!authenticateToken(req.headers["api_token"])) res.status(401).send("Unauthorized.")
+    if (!authenticateToken(req.headers["Authorization"])) res.status(401).send("Unauthorized.")
     
     else {
         try {
@@ -55,7 +54,7 @@ app.put("/messages/:handle", (req, res) => {
     const handle = req.params.handle
     const body = req.body
 
-    if (!authenticateToken(req.headers["api_token"])) res.status(401).send("Unauthorized.")
+    if (!authenticateToken(req.headers["Authorization"])) res.status(401).send("Unauthorized.")
 
     else {
         try {
