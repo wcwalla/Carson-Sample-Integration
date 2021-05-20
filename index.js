@@ -53,7 +53,7 @@ router.put("/messages/:handle", (req, res) => {
     })
 })
 
-router.listen(port, () => {
+app.listen(port, () => {
     console.log(`carsondemoservice is listening on port http://localhost:${port}`);
 })
 
