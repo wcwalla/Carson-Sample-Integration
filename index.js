@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 let port = process.env.PORT || 3000;
 const userData = require("./data/users.json");
+const loadData = require("./data/loads.json");
 var messageData = require("./data/messages.json");
 const fs = require("fs")
 
-const router = express.Router()
 
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -15,13 +15,13 @@ const pool = new Pool({
     }
 });
 
-router.get("/authenticate/:token", (req, res) => {
+app.get("/authenticate/:token", (req, res) => {
     var token = req.params.token
     let user = userData.filter(function(item) { return item.api_token === token; })
     res.send(user[0])
 })
 
-router.get('/loads', async (req, res) => {
+app.get('/loads', async (req, res) => {
     try {
         const client = await pool.connect();
         const result = await client.query('SELECT * FROM loads');
@@ -35,7 +35,7 @@ router.get('/loads', async (req, res) => {
     }
 })
 
-router.put("/messages/:handle", (req, res) => {
+app.put("/messages/:handle", (req, res) => {
     var handle = req.params.handle
     message = {handle: handle}
     res.send(message)
