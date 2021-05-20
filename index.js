@@ -6,6 +6,8 @@ const loadData = require("./data/loads.json");
 var messageData = require("./data/messages.json");
 const fs = require("fs")
 
+const router = express.Router()
+
 const { Pool } = require('pg');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -14,17 +16,13 @@ const pool = new Pool({
     }
 });
 
-app.get("/authenticate/:token", (req, res) => {
+router.get("/authenticate/:token", (req, res) => {
     var token = req.params.token
     let user = userData.filter(function(item) { return item.api_token === token; })
     res.send(user[0])
 })
 
-app.get("/loads", (req, res) => {
-    res.send(loadData)
-})
-
-app.get('/db', async (req, res) => {
+router.get('/loads', async (req, res) => {
     try {
         const client = await pool.connect();
         const result = await client.query('SELECT * FROM loads');
@@ -38,7 +36,7 @@ app.get('/db', async (req, res) => {
     }
 })
 
-app.put("/messages/:handle", (req, res) => {
+router.put("/messages/:handle", (req, res) => {
     var handle = req.params.handle
     message = {handle: handle}
     res.send(message)
@@ -56,7 +54,7 @@ app.put("/messages/:handle", (req, res) => {
     })
 })
 
-app.listen(port, () => {
+router.listen(port, () => {
     console.log(`carsondemoservice is listening on port http://localhost:${port}`);
 })
 
