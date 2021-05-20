@@ -33,7 +33,9 @@ app.get("/authenticate/:token", (req, res) => {
 
 app.get('/loads', async (req, res) => {
 
-    if (!authenticateToken(req.headers["Authorization"])) res.status(401).send("Unauthorized.")
+    console.log(req)
+
+    if (!authenticateToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
     
     else {
         try {
@@ -54,7 +56,7 @@ app.put("/messages/:handle", (req, res) => {
     const handle = req.params.handle
     const body = req.body
 
-    if (!authenticateToken(req.headers["Authorization"])) res.status(401).send("Unauthorized.")
+    if (!authenticateToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
 
     else {
         try {
