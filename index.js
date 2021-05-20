@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 let port = process.env.PORT || 3000;
 const userData = require("./data/users.json");
-const loadData = require("./data/loads.json");
 var messageData = require("./data/messages.json");
 const fs = require("fs")
 
