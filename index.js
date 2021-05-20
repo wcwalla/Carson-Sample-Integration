@@ -22,18 +22,29 @@ const pool = new Pool({
     }
 });
 
-app.get("/authenticate/:token", (req, res) => {
+app.get("/authenticate/:token", async (req, res) => {
     
     token = req.params.token
 
-    let user = userData.filter(function(item) { return item.api_token === token; })
+    // let user = userData.filter(function(item) { return item.api_token === token; })
 
-    user.length != 0 ? res.status(200).json(user[0]) : res.status(401).send("Unauthorized.")
+    // user.length != 0 ? res.status(200).json(user[0]) : res.status(401).send("Unauthorized.")
+
+    try {
+        const client = await pool.connect();
+        const result = await client.query(
+            `SELECT * FROM users WHERE api_token = '${token}'`);
+        result.length != 0 ? res.status(200).json(result.rows[0]) : res.status(401).send("Unauthorized.")
+        client.release();
+        
+    } catch (err) {
+        console.error(err);
+        res.status(400).send("Error " + err);
+    }
+
 })
 
 app.get('/loads', async (req, res) => {
-
-    console.log(req)
 
     if (!authenticateToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
     
