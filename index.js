@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 let port = process.env.PORT || 3000;
 
+const jwt_decode = require('jwt-decode');
+
 require('dotenv').config()
 
 const bodyParser = require('body-parser')
@@ -28,10 +30,20 @@ app.get("/authenticate/:token", async (req, res) => {
 
     try {
 
-        results = await executeQuery(
-            `SELECT * FROM users WHERE api_token = '${token}'`)
+        // results = await executeQuery(
+        //     `INSERT INTO api_tokens VALUES ('${token}')`)
 
-        results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
+        // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
+
+        decoded = jwt_decode(token)
+
+        res.status(200).json(
+            {
+                api_token: token, 
+                full_name: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'], 
+                username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+            }
+        )
         
     } catch (err) {
         console.error(err);
