@@ -38,7 +38,7 @@ app.get("/authenticate/:token", async (req, res) => {
         decoded = jwt_decode(token)
 
         await executeQuery(
-            `INSERT INTO api_tokens VALUES ('${token}')`)
+            `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
 
         res.status(200).json(
             {
@@ -169,7 +169,7 @@ validateMsg = (msg) => {
 invalidToken = async (token) => { 
 
     results = await executeQuery(
-        `SELECT * FROM api_tokens WHERE token = '${token}'`)
+        `SELECT * FROM api_tokens WHERE api_token = '${token}'`)
 
     return results.length == 0
 
