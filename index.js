@@ -81,13 +81,13 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
                 message_type: body.message_type,
                 composed_at: body.composed_at,
                 platform_received_at: body.platform_received_at,
-                body: body.body || null,
-                form_code: body.form_code || null,
+                body: body.body || '',
+                form_code: body.form_code || '',
                 form_date: body.form_date || '1000-01-01T00:00:00+00:00',
-                contact: body.contact || null,
+                contact: body.contact || '',
                 read_at: body.read_at || '1000-01-01T00:00:00+00:00',
                 deleted_at: body.deleted_at || '1000-01-01T00:00:00+00:00',
-                in_reply_to_handle: body.in_reply_to_handle || null,
+                in_reply_to_handle: body.in_reply_to_handle || '',
                 workflow_action: body.workflow_action || null
                 
             }
