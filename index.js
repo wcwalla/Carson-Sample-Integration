@@ -57,9 +57,9 @@ app.get("/authenticate/:token", async (req, res) => {
 
 app.get('/loads', async (req, res) => {
 
-    if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
+    // if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
     
-    else {
+    // else {
         
         try {
 
@@ -73,7 +73,7 @@ app.get('/loads', async (req, res) => {
         }
 
 
-    }   
+    // }   
 })
 
 app.put("/messages/:handle", jsonParser, async (req, res) => {
