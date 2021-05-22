@@ -37,6 +37,9 @@ app.get("/authenticate/:token", async (req, res) => {
 
         decoded = jwt_decode(token)
 
+        await executeQuery(
+            `INSERT INTO api_tokens VALUES ('${token}')`)
+
         res.status(200).json(
             {
                 api_token: token, 
@@ -54,7 +57,7 @@ app.get("/authenticate/:token", async (req, res) => {
 
 app.get('/loads', async (req, res) => {
 
-    if (invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
+    if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
     
     else {
         
@@ -168,7 +171,7 @@ validateMsg = (msg) => {
 invalidToken = async (token) => { 
 
     results = await executeQuery(
-        `SELECT * FROM users WHERE api_token = '${token}'`)
+        `SELECT * FROM api_tokens WHERE token = '${token}'`)
 
     return results.length == 0
 
