@@ -24,6 +24,11 @@ const pool = new Pool({
     }
 });
 
+
+var Airtable = require('airtable');
+var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
+
+
 app.get("/authenticate/:token", async (req, res) => {
     
     token = req.params.token
@@ -61,16 +66,32 @@ app.get('/loads', async (req, res) => {
     
     // else {
         
-        try {
+        // try {
 
-            results = await executeQuery('SELECT * FROM loads')
+        //     results = await executeQuery('SELECT * FROM loads')
 
-            res.status(200).json(results);
+        //     res.status(200).json(results);
 
-        } catch (err) {
-            console.error(err);
-            res.status(400).send("Error " + err);
-        }
+        // } catch (err) {
+        //     console.error(err);
+        //     res.status(400).send("Error " + err);
+        // }
+
+
+        base('Users').find('recC4akuoI8ge9rvH', async function(err, record) {
+            if (err) { console.error(err); return; }
+            loadIDArr = await record._rawJson.fields.Loads
+
+
+            loads = []
+            for (const loadID in loadIDArr) {
+                base('Loads').find(loadIDArr[loadID], async function(err, record) {
+                    if (err) { console.error(err); return; }
+                    loads.push(await record._rawJson.fields)
+                    if (loads.length == loadIDArr.length) res.status(200).json(loads)
+                });
+            }
+        });
 
 
     // }   
