@@ -81,9 +81,9 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
     const handle = req.params.handle
     const body = req.body
 
-    if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
+    // if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
 
-    else {
+    //else {
 
         try {
 
@@ -106,8 +106,6 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
                 workflow_action: body.workflow_action || null
                 
             }
-
-            console.log(msg)
             
             await executeQuery(`INSERT INTO messages (handle, direction, username, message_type, composed_at, platform_received_at, body, form_code, form_date, contact, read_at, deleted_at, in_reply_to_handle, workflow_action) VALUES ('${msg.handle}', '${msg.direction}', '${msg.username}', '${msg.message_type}', '${msg.composed_at}', '${msg.platform_received_at}', '${msg.body}', '${msg.form_code}', '${msg.form_date}', '${msg.contact}', '${msg.read_at}', '${msg.deleted_at}', '${msg.in_reply_to_handle}', ${msg.workflow_action})`)
 
@@ -130,7 +128,7 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
         } catch(err) {
             res.status(400).json( [{ description: "Invalid message data.", code: 400}])
         }
-    }  
+    //}  
 })
 
 
