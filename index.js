@@ -33,38 +33,46 @@ app.get("/authenticate/:token", async (req, res) => {
     
     token = req.params.token
 
-    try {
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+        res.status(401).send("Unauthorized.")
+    }
+    else {
 
-        // results = await executeQuery(
-        //     `INSERT INTO api_tokens VALUES ('${token}')`)
+        try {
 
-        // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
+            // results = await executeQuery(
+            //     `INSERT INTO api_tokens VALUES ('${token}')`)
 
-        decoded = jwt_decode(token)
+            // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
 
-        await executeQuery(
-            `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
+            decoded = jwt_decode(token)
 
-        res.status(200).json(
-            {
-                api_token: token, 
-                full_name: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'], 
-                username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
-            }
-        )
-        
-    } catch (err) {
-        console.error(err);
-        res.status(400).send("Error " + err);
+            await executeQuery(
+                `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
+
+            res.status(200).json(
+                {
+                    api_token: token, 
+                    full_name: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'], 
+                    username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+                }
+            )
+            
+        } catch (err) {
+            console.error(err);
+            res.status(400).send("Error " + err);
+        }
     }
 
 })
 
 app.get('/loads', async (req, res) => {
 
-    // if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+        res.status(401).send("Unauthorized.")
+    }
     
-    // else {
+    else {
         
         try {
 
@@ -125,6 +133,7 @@ app.get('/loads', async (req, res) => {
             console.error(err);
             res.status(400).send("Error " + err);
         }
+    }
 
 
         // base('Users').find('recC4akuoI8ge9rvH', async function(err, record) {
@@ -142,8 +151,7 @@ app.get('/loads', async (req, res) => {
         //     }
         // });
 
-
-    // }   
+ 
 })
 
 app.put("/messages/:handle", jsonParser, async (req, res) => {
@@ -151,9 +159,11 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
     const handle = req.params.handle
     const body = req.body
 
-    // if (await invalidToken(req.headers["authorization"])) res.status(401).send("Unauthorized.")
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+        res.status(401).send("Unauthorized.")
+    }
 
-    //else {
+    else {
 
         try {
 
@@ -182,23 +192,11 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
 
             res.status(200).json( {handle: msg.handle} )
 
-            // fs.readFile('./data/messages.json', 'utf-8', function(err, data) {
-            //     if (err) throw err
-            
-            //     var messages = JSON.parse(data)
-            //     messages.push(message)
-
-            
-            //     fs.writeFile('./data/messages.json', JSON.stringify(messages), 'utf-8', function(err) {
-            //         if (err) throw err
-            //     })
-            // })
-
 
         } catch(err) {
             res.status(400).json( [{ description: "Invalid message data.", code: 400}])
         }
-    //}  
+    }  
 })
 
 
