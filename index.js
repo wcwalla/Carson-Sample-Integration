@@ -2,10 +2,8 @@ const express = require("express");
 const app = express();
 let port = process.env.PORT || 3000;
 
-// const jwt_decode = require('jwt-decode');
-// const jwt_encode = require('jwt-encode');
-
-var jwt = require('jsonwebtoken');
+const jwt_decode = require('jwt-decode');
+const jwt_encode = require('jwt-encode')
 
 require('dotenv').config()
 
@@ -48,28 +46,21 @@ app.get("/authenticate/:token", async (req, res) => {
 
             // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
 
-            secret = '45ma193hn3hd745k5394b64d147jd72h'
-
-
-            decoded = jwt.verify(token, secret)
+            decoded = jwt_decode(token)
 
             fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
             username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
 
-            // fullName = 'CARSON'
-            // username = 'CARSON'
-
             await executeQuery(
                 `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
 
+            secret = 'hsd15f9tad2j1wd21j4a9'
 
-            encoded = jwt.sign(
+            encoded = jwt_encode(
                 {
                     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': fullName, 
                     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' : username
                 }, secret)
-
-            console.log(encoded)
 
             res.status(200).json(
                 {
