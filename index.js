@@ -85,17 +85,17 @@ app.get('/loads', async (req, res) => {
                 }
 
                 loads[i]['actions'] = []
-                actions = await executeQuery(`SELECT * FROM load_action, actions WHERE load_action.action_id = actions.action_id AND load_action.load_id = '${loads[i].id}'`)
-                for (const j in actions) {
-                    delete actions[j]["load_id"]
-                    delete actions[j]["action_id"]
+                // actions = await executeQuery(`SELECT * FROM load_action, actions WHERE load_action.action_id = actions.action_id AND load_action.load_id = '${loads[i].id}'`)
+                // for (const j in actions) {
+                //     delete actions[j]["load_id"]
+                //     delete actions[j]["action_id"]
 
-                    properties = await executeQuery(`SELECT * FROM properties WHERE properties.properties_id = ${actions[j].properties}`)
-                    delete properties[0]['properties_id']
-                    actions[j].properties = properties[0]
+                //     properties = await executeQuery(`SELECT * FROM properties WHERE properties.properties_id = ${actions[j].properties}`)
+                //     delete properties[0]['properties_id']
+                //     actions[j].properties = properties[0]
 
-                    loads[i].actions.push(actions[j])
-                }
+                //     loads[i].actions.push(actions[j])
+                // }
 
                 loads[i]['stops'] = []
                 stops = await executeQuery(`SELECT * FROM load_stop, stops WHERE load_stop.stop_id = stops.stop_id AND load_stop.load_id = '${loads[i].id}'`)
