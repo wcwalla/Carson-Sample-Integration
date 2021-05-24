@@ -51,13 +51,13 @@ app.get("/authenticate/:token", async (req, res) => {
             secret = '45ma193hn3hd745k5394b64d147jd72h'
 
 
-            decoded = jwt.verify(token, secret)
+            // decoded = jwt.verify(token, secret)
 
-            fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
-            username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+            // fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
+            // username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
 
-            // fullName = 'CARSON'
-            // username = 'CARSON'
+            fullName = 'CARSON'
+            username = 'CARSON'
 
             await executeQuery(
                 `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
