@@ -91,7 +91,7 @@ app.get('/loads', async (req, res) => {
                     delete actions[j]["action_id"]
 
                     properties = await executeQuery(`SELECT * FROM properties WHERE properties.properties_id = ${actions[j].properties}`)
-                    delete properties['properties_id']
+                    delete properties[0]['properties_id']
                     actions[j].properties = properties[0]
 
                     loads[i].actions.push(actions[j])
