@@ -2,7 +2,10 @@ const express = require("express");
 const app = express();
 let port = process.env.PORT || 3000;
 
-const jwt_decode = require('jwt-decode');
+// const jwt_decode = require('jwt-decode');
+// const jwt_encode = require('jwt-encode');
+
+var jwt = require('jsonwebtoken');
 
 require('dotenv').config()
 
@@ -45,16 +48,34 @@ app.get("/authenticate/:token", async (req, res) => {
 
             // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
 
-            decoded = jwt_decode(token)
+            secret = '45ma193hn3hd745k5394b64d147jd72h'
+
+
+            // decoded = jwt.verify(token, secret)
+
+            // fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
+            // username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+
+            fullName = 'CARSON'
+            username = 'CARSON'
 
             await executeQuery(
                 `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
 
+
+            encoded = jwt.sign(
+                {
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': fullName, 
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' : username
+                }, secret)
+
+            console.log(encoded)
+
             res.status(200).json(
                 {
-                    api_token: token, 
-                    full_name: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'], 
-                    username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+                    api_token: encoded, 
+                    full_name: fullName, 
+                    username: username
                 }
             )
             
