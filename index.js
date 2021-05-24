@@ -73,7 +73,7 @@ app.get("/authenticate/:token", async (req, res) => {
 
             res.status(200).json(
                 {
-                    api_token: encoded, 
+                    api_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IkNBUlNPTiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJDQVJTT04iLCJpYXQiOjE2MjE4ODY3MzZ9.crDe7Rmzsy0K7anGpLDP9QuiySe6KDTF0devl9l1fSI', 
                     full_name: fullName, 
                     username: username
                 }
