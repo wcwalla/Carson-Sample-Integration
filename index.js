@@ -51,13 +51,13 @@ app.get("/authenticate/:token", async (req, res) => {
             secret = '45ma193hn3hd745k5394b64d147jd72h'
 
 
-            // decoded = jwt.verify(token, secret)
+            decoded = jwt.verify(token, secret)
 
-            // fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
-            // username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+            fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
+            username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
 
-            fullName = 'CARSON'
-            username = 'CARSON'
+            // fullName = 'CARSON'
+            // username = 'CARSON'
 
             await executeQuery(
                 `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
@@ -73,7 +73,7 @@ app.get("/authenticate/:token", async (req, res) => {
 
             res.status(200).json(
                 {
-                    api_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IkNBUlNPTiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJDQVJTT04iLCJpYXQiOjE2MjE4ODY3MzZ9.crDe7Rmzsy0K7anGpLDP9QuiySe6KDTF0devl9l1fSI', 
+                    api_token: encoded, 
                     full_name: fullName, 
                     username: username
                 }
