@@ -68,9 +68,55 @@ app.get('/loads', async (req, res) => {
         
         try {
 
-            results = await executeQuery('SELECT * FROM loads')
+            loads = await executeQuery('SELECT * FROM loads')
+            
+            for (const i in loads) {
 
-            res.status(200).json(results);
+                if (loads[i].route_options) {
+                    routeOptions = await executeQuery(`SELECT * FROM route_options WHERE route_options.options_id = ${loads[i].route_options}`)
+                    delete routeOptions['options_id']
+                    loads[i].route_options = routeOptions[0]
+                }
+
+                if (loads[i].truck) {
+                    truck = await executeQuery(`SELECT * FROM trucks WHERE trucks.truck_id = ${loads[i].truck}`)
+                    delete routeOptions['truck_id']
+                    loads[i].truck = truck[0]
+                }
+
+                loads[i]['actions'] = []
+                actions = await executeQuery(`SELECT * FROM load_action, actions WHERE load_action.action_id = actions.action_id AND load_action.load_id = '${loads[i].id}'`)
+                for (const j in actions) {
+                    delete actions[j]['load_id']
+                    delete actions[j]['action_id']
+
+                    properties = await executeQuery(`SELECT * FROM properties WHERE properties.properties_id = ${actions[j].properties}`)
+                    delete properties['properties_id']
+                    actions[j].properties = properties[0]
+
+                    loads[i].actions.push(actions[j])
+                }
+
+                loads[i]['stops'] = []
+                stops = await executeQuery(`SELECT * FROM load_stop, stops WHERE load_stop.stop_id = stops.stop_id AND load_stop.load_id = '${loads[i].id}'`)
+                for (const j in stops) {
+                    delete stops[j]['load_id']
+                    
+                    stops[j]['identifiers'] = []
+                    identifiers = await executeQuery(`SELECT * FROM stop_identifier, identifiers WHERE stop_identifier.identifier_id = identifiers.identifier_id AND stop_identifier.stop_id = ${stops[j].stop_id}`)
+                    for (const k in identifiers) {
+                        delete identifiers[k]['identifier_id']
+                        stops[j].identifiers.push(identifiers[k])
+                    }
+
+                    loads[i].stops.push(stops[j])
+                }
+            }
+
+            
+
+
+            res.status(200).json(loads);
 
         } catch (err) {
             console.error(err);
