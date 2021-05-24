@@ -74,13 +74,13 @@ app.get('/loads', async (req, res) => {
 
                 if (loads[i].route_options) {
                     routeOptions = await executeQuery(`SELECT * FROM route_options WHERE route_options.options_id = ${loads[i].route_options}`)
-                    delete routeOptions['options_id']
+                    delete routeOptions[0]["options_id"]
                     loads[i].route_options = routeOptions[0]
                 }
 
                 if (loads[i].truck) {
                     truck = await executeQuery(`SELECT * FROM trucks WHERE trucks.truck_id = ${loads[i].truck}`)
-                    delete routeOptions['truck_id']
+                    delete routeOptions[0]["truck_id"]
                     loads[i].truck = truck[0]
                 }
 
@@ -101,14 +101,17 @@ app.get('/loads', async (req, res) => {
                 stops = await executeQuery(`SELECT * FROM load_stop, stops WHERE load_stop.stop_id = stops.stop_id AND load_stop.load_id = '${loads[i].id}'`)
                 for (const j in stops) {
                     delete stops[j]['load_id']
-                    
+
                     stops[j]['identifiers'] = []
                     identifiers = await executeQuery(`SELECT * FROM stop_identifier, identifiers WHERE stop_identifier.identifier_id = identifiers.identifier_id AND stop_identifier.stop_id = ${stops[j].stop_id}`)
                     for (const k in identifiers) {
                         delete identifiers[k]['identifier_id']
+                        delete identifiers[k]['stop_id']
+
                         stops[j].identifiers.push(identifiers[k])
                     }
 
+                    delete stops[j]["stop_id"]
                     loads[i].stops.push(stops[j])
                 }
             }
