@@ -226,6 +226,38 @@ app.get('/payroll', async (req, res) => {
     }
 })
 
+app.get('/driver_status', async (req, res) => {
+
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+        res.status(401).send("Unauthorized.")
+    }
+    else {
+
+        try {
+
+            driverStatus = await executeQuery('SELECT * FROM driver_status')
+
+            driverStatus[0]['hours_of_service'] = []
+
+            hours_of_service = await executeQuery(`SELECT * FROM hos WHERE driver_status = ${driverStatus[0].id}`)
+
+
+            for (const i in hours_of_service) {
+                delete hours_of_service[i].id
+                delete hours_of_service[i].driver_status
+                driverStatus[0].hours_of_service.push(hours_of_service[i])
+            }
+            delete driverStatus[0].id
+
+            res.status(200).json(driverStatus[0]);
+
+        } catch (err) {
+            console.error(err);
+            res.status(400).send("Error " + err);
+        }
+    }
+})
+
 app.put("/messages/:handle", jsonParser, async (req, res) => {
 
     const handle = req.params.handle
