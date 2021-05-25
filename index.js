@@ -27,6 +27,7 @@ const pool = new Pool({
 
 
 var Airtable = require('airtable');
+const e = require("express");
 var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
 
@@ -34,25 +35,23 @@ app.get("/authenticate/:token", async (req, res) => {
     
     token = req.params.token
 
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
-        res.status(401).send("Unauthorized.")
-    }
+    if (!(await authorize(
+        {
+            "eleos-platform-key": req.headers["eleos-platform-key"],
+            "authorization": "Token token=" + token
+        }
+    )))
+    res.status(401).send("Unauthorized.")
+
     else {
 
         try {
-
-            // results = await executeQuery(
-            //     `INSERT INTO api_tokens VALUES ('${token}')`)
-
-            // results.length != 0 ? res.status(200).json(results[0]) : res.status(401).send("Unauthorized.")
+            
 
             decoded = jwt_decode(token)
 
             fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
             username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
-
-            await executeQuery(
-                `INSERT INTO api_tokens (api_token) VALUES ('${token}')`)
 
             secret = 'hsd15f9tad2j1wd21j4a9'
 
@@ -62,13 +61,11 @@ app.get("/authenticate/:token", async (req, res) => {
                     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' : username
                 }, secret)
 
-            res.status(200).json(
-                {
-                    api_token: encoded, 
-                    full_name: fullName, 
-                    username: username
-                }
-            )
+            user = await getUserObj(username)
+
+            user['api_token'] = token
+            
+            res.status(200).json(user)
             
         } catch (err) {
             console.error(err);
@@ -80,7 +77,7 @@ app.get("/authenticate/:token", async (req, res) => {
 
 app.get('/loads', async (req, res) => {
 
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+    if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
     }
     
@@ -165,7 +162,7 @@ app.get('/loads', async (req, res) => {
 
 app.get('/truck', async (req, res) => {
 
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+    if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
     }
     else {
@@ -192,7 +189,7 @@ app.get('/truck', async (req, res) => {
 
 app.get('/payroll', async (req, res) => {
 
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+    if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
     }
     else {
@@ -228,9 +225,7 @@ app.get('/payroll', async (req, res) => {
 
 app.get('/driver_status', async (req, res) => {
 
-    console.log(req.headers)
-
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+    if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
     }
     else {
@@ -265,7 +260,7 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
     const handle = req.params.handle
     const body = req.body
 
-    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
+    if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
     }
 
@@ -340,12 +335,56 @@ validateMsg = (msg) => {
 
 }
 
-invalidToken = async (token) => { 
+authorize = async (header) => {
 
-    results = await executeQuery(
-        `SELECT * FROM api_tokens WHERE api_token = '${token}'`)
 
-    return results.length == 0
+    if (header["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
+    return false
+
+    try {
+
+        token = header["authorization"].split("=")[1]
+
+        decoded = jwt_decode(token)
+
+        username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+
+        // base('Users').find(username, async function(err, record) {
+        //         if (err) { console.error(err); return; }
+        //         loadIDArr = await record._rawJson.fields.Loads
+
+        //     });
+
+
+        return new Promise((resolve) => {
+            base('Users').select({
+                filterByFormula: `{username} = "${username}"`,
+                }).eachPage(function page(records) {
+
+                    resolve(records.length != 0)
+                    
+                })
+            })
+                
+
+    } catch(err) {
+        console.log("Invalid Token")
+        return false
+    }
+
+}
+
+getUserObj = async(username) => {
+
+    return new Promise((resolve) => {
+        base('Users').select({
+            filterByFormula: `{username} = "${username}"`,
+            }).eachPage(function page(records) {
+                
+                resolve(records[0]._rawJson.fields)
+                
+            })
+        })
 
 }
 
