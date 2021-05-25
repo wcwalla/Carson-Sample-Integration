@@ -228,6 +228,8 @@ app.get('/payroll', async (req, res) => {
 
 app.get('/driver_status', async (req, res) => {
 
+    console.log(req.headers)
+
     if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY) {
         res.status(401).send("Unauthorized.")
     }
