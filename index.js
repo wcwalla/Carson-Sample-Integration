@@ -61,9 +61,23 @@ app.get("/authenticate/:token", async (req, res) => {
                     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' : username
                 }, secret)
 
-            user = await getUserObj(username)
+            userObj = await getUserObj(username)
+            
+            user = {
+                api_token: token,
+                full_name: userObj.full_name
+            }
 
-            user['api_token'] = token
+            if (userObj.web_token) user['web_token'] = userObj.full_name
+            if (userObj.billing_code) user['billing_code'] = userObj.billing_code
+            if (userObj.billing_description) user['billing_description'] = userObj.billing_description
+            if (userObj.billing_type) user['billing_type'] = userObj.billing_type
+            if (userObj.menu_code) user['menu_code'] = userObj.menu_code
+            if (userObj.dashboard_code) user['dashboard_code'] = userObj.dashboard_code
+            if (userObj.custom_settings_form_code) user['custom_settings_form_code'] = userObj.custom_settings_form_code
+            if (userObj.custom) user['custom'] = userObj.custom
+            if (userObj.username) user['username'] = userObj.username
+            if (userObj.division_code) user['division_code'] = userObj.division_code
             
             res.status(200).json(user)
             
