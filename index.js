@@ -31,6 +31,19 @@ const e = require("express");
 var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID);
 
 
+const rateLimit = require("express-rate-limit");
+
+app.set('trust proxy', 1);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+//  apply to all requests
+app.use(limiter);
+
+
 app.get("/authenticate/:token", async (req, res) => {
     
     token = req.params.token
