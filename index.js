@@ -61,23 +61,9 @@ app.get("/authenticate/:token", async (req, res) => {
                     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name' : username
                 }, secret)
 
-            userObj = await getUserObj(username)
-            
-            user = {
-                api_token: token,
-                full_name: userObj.full_name
-            }
+            user = await getUserObj(username)
 
-            if (userObj.web_token) user['web_token'] = userObj.full_name
-            if (userObj.billing_code) user['billing_code'] = userObj.billing_code
-            if (userObj.billing_description) user['billing_description'] = userObj.billing_description
-            if (userObj.billing_type) user['billing_type'] = userObj.billing_type
-            if (userObj.menu_code) user['menu_code'] = userObj.menu_code
-            if (userObj.dashboard_code) user['dashboard_code'] = userObj.dashboard_code
-            if (userObj.custom_settings_form_code) user['custom_settings_form_code'] = userObj.custom_settings_form_code
-            if (userObj.custom) user['custom'] = userObj.custom
-            if (userObj.username) user['username'] = userObj.username
-            if (userObj.division_code) user['division_code'] = userObj.division_code
+            user = cleanObj(user)
             
             res.status(200).json(user)
             
@@ -106,12 +92,14 @@ app.get('/loads', async (req, res) => {
                 if (loads[i].route_options) {
                     routeOptions = await executeQuery(`SELECT * FROM route_options WHERE route_options.options_id = ${loads[i].route_options}`)
                     delete routeOptions[0]["options_id"]
+                    routeOptions[0] = cleanObj(routeOptions[0])
                     loads[i].route_options = routeOptions[0]
                 }
 
                 if (loads[i].truck) {
                     truck = await executeQuery(`SELECT * FROM trucks WHERE trucks.truck_id = ${loads[i].truck}`)
                     delete truck[0]["truck_id"]
+                    truck[0] = cleanObj(truck[0])
                     loads[i].truck = truck[0]
                 }
 
@@ -138,14 +126,22 @@ app.get('/loads', async (req, res) => {
                     for (const k in identifiers) {
                         delete identifiers[k]['identifier_id']
                         delete identifiers[k]['stop_id']
-
+                        
+                        identifiers[k] = cleanObj(identifiers[k])
                         stops[j].identifiers.push(identifiers[k])
                     }
 
                     delete stops[j]["stop_id"]
+
+                    stops[j] = cleanObj(stops[j])
                     loads[i].stops.push(stops[j])
                 }
+
+                loads[i] = cleanObj(loads[i])
+
             }
+
+            
 
             res.status(200).json(loads);
 
@@ -192,6 +188,8 @@ app.get('/truck', async (req, res) => {
                 myTruck.location = location[0]
             }
 
+            myTruck = cleanObj(myTruck)
+
             res.status(200).json(myTruck);
 
         } catch (err) {
@@ -223,11 +221,16 @@ app.get('/payroll', async (req, res) => {
                     delete details[j].details_id
                     delete details[j].paycheck_id
                     delete details[j].id
+
+                    details[j] = cleanObj(details[j])
                     payroll[i].details.push(details[j])
                 }
 
-            
+                payroll[i] = cleanObj(payroll[i])
+
             }
+
+
             res.status(200).json({paychecks: payroll});
 
         } catch (err) {
@@ -248,19 +251,25 @@ app.get('/driver_status', async (req, res) => {
 
             driverStatus = await executeQuery('SELECT * FROM driver_status')
 
-            driverStatus[0]['hours_of_service'] = []
+            driverStatus = driverStatus[0]
 
-            hours_of_service = await executeQuery(`SELECT * FROM hos WHERE driver_status = ${driverStatus[0].id}`)
+            driverStatus['hours_of_service'] = []
+
+            hours_of_service = await executeQuery(`SELECT * FROM hos WHERE driver_status = ${driverStatus.id}`)
 
 
             for (const i in hours_of_service) {
                 delete hours_of_service[i].id
                 delete hours_of_service[i].driver_status
-                driverStatus[0].hours_of_service.push(hours_of_service[i])
-            }
-            delete driverStatus[0].id
 
-            res.status(200).json(driverStatus[0]);
+                hours_of_service[i] = cleanObj(hours_of_service[i])
+                driverStatus.hours_of_service.push(hours_of_service[i])
+            }
+            delete driverStatus.id
+
+            driverStatus = cleanObj(driverStatus)
+
+            res.status(200).json(driverStatus);
 
         } catch (err) {
             console.error(err);
@@ -419,4 +428,13 @@ executeQuery = async (query) => {
         return
     }
 
+}
+
+cleanObj = (obj) => {
+    for (var propName in obj) {
+        if (obj[propName] === null) {
+            delete obj[propName]
+        }
+    }
+    return obj
 }
