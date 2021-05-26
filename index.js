@@ -360,28 +360,29 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
 
             if (!validateMsg(body)) throw err;
 
-            const msg = {
-                handle: handle,
-                direction: body.direction,
-                username: body.username, 
-                message_type: body.message_type,
-                composed_at: body.composed_at,
-                platform_received_at: body.platform_received_at,
-                body: body.body || '',
-                form_code: body.form_code || '',
-                form_date: body.form_date || '1000-01-01T00:00:00+00:00',
-                contact: body.contact || '',
-                read_at: body.read_at || '1000-01-01T00:00:00+00:00',
-                deleted_at: body.deleted_at || '1000-01-01T00:00:00+00:00',
-                in_reply_to_handle: body.in_reply_to_handle || '',
-                workflow_action: body.workflow_action || null
-                
-            }
+            query = "INSERT INTO messages (handle, direction, username, message_type, composed_at, platform_received_at, body, form_code, form_date, contact, read_at, deleted_at, in_reply_to_handle, workflow_action) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)"
+
+            values = [
+                handle, 
+                body.direction, 
+                body.username, 
+                body.message_type, 
+                body.composed_at, 
+                body.platform_received_at, 
+                body.body, 
+                body.form_code, 
+                body.form_date, 
+                body.contact, 
+                body.read_at, 
+                body.deleted_at, 
+                body.in_reply_to_handle, 
+                body.workflow_action
+            ]
             
-            await executeQuery(`INSERT INTO messages (handle, direction, username, message_type, composed_at, platform_received_at, body, form_code, form_date, contact, read_at, deleted_at, in_reply_to_handle, workflow_action) VALUES ('${msg.handle}', '${msg.direction}', '${msg.username}', '${msg.message_type}', '${msg.composed_at}', '${msg.platform_received_at}', '${msg.body}', '${msg.form_code}', '${msg.form_date}', '${msg.contact}', '${msg.read_at}', '${msg.deleted_at}', '${msg.in_reply_to_handle}', ${msg.workflow_action})`)
+            await executeQuery(query, values)
 
 
-            res.status(200).json( {handle: msg.handle} )
+            res.status(200).json( {handle: handle} )
 
 
         } catch(err) {
@@ -398,7 +399,7 @@ app.put("/tripchanges/:handle", jsonParser, async (req, res) => {
 
     else {
 
-        //try {
+        try {
 
             const handle = req.params.handle
             const body = req.body
@@ -424,15 +425,38 @@ app.put("/tripchanges/:handle", jsonParser, async (req, res) => {
                 
             }
             
-            await executeQuery(`INSERT INTO tripchanges (handle, username, load_id, timestamp, location, type, new_location, stop_number, name, address, postal_code, state, city, crowd_sourced, accuracy, error_code, from_poi) VALUES ('${tripChange.handle}', '${tripChange.username}', '${tripChange.load_id}', '${tripChange.timestamp}', '${JSON.stringify(tripChange.location)}', '${tripChange.type}', '${JSON.stringify(tripChange.new_location)}', ${tripChange.stop_number}, '${tripChange.name}', '${tripChange.address}', '${tripChange.postal_code}', '${tripChange.state}', '${tripChange.city}', ${tripChange.crowd_sourced}, '${tripChange.accuracy}', '${tripChange.error_code}', '${tripChange.from_poi}')`)
+            query = "INSERT INTO tripchanges (handle, username, load_id, timestamp, location, type, new_location, stop_number, name, address, postal_code, state, city, crowd_sourced, accuracy, error_code, from_poi) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)"
+
+            values = [
+                handle,
+                body.username,
+                body.load_id,
+                body.timestamp,
+                body.location,
+                body.type,
+                body.new_location,
+                body.stop_number,
+                body.name,
+                body.address,
+                body.postal_code,
+                body.state,
+                body.city,
+                body.crowd_sourced,
+                body.accuracy,
+                body.error_code,
+                body.from_poi
+                
+            ]
+
+            await executeQuery(query, values)
 
 
             res.status(200).json( {handle: handle} )
 
 
-        // } catch(err) {
-        //     res.status(400).json( [{ description: "Invalid message data.", code: 400}])
-        // }
+        } catch(err) {
+            res.status(400).json( [{ description: "Invalid tripchange data.", code: 400}])
+        }
     }  
 })
 
@@ -524,12 +548,12 @@ getUserObj = async(username) => {
 
 }
 
-executeQuery = async (query) => {
+executeQuery = async (query, values) => {
 
     try {
 
         const client = await pool.connect();
-        const result = await client.query(query);
+        const result = await client.query(query, values);
 
         client.release();
 
