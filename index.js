@@ -98,7 +98,7 @@ app.get("/authenticate/:token", async (req, res) => {
             
         } catch (err) {
             console.error(err);
-            res.status(400).send("Error " + err);
+            res.status(400).send("Error: Trouble getting user from airtable.");
         }
     }
 
@@ -343,9 +343,7 @@ app.get('/todos', async (req, res) => {
     }
 })
 
-app.put("/messages/:handle", jsonParser, async (req, res) => {
-
-    
+app.put("/messages/:handle", jsonParser, async (req, res) => {  
 
     if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
     res.status(401).send("Unauthorized.")
