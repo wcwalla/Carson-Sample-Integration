@@ -332,8 +332,7 @@ app.get('/todos', async (req, res) => {
 
 app.put("/messages/:handle", jsonParser, async (req, res) => {
 
-    const handle = req.params.handle
-    const body = req.body
+    
 
     if (!(await authorize(req.headers))) {
         res.status(401).send("Unauthorized.")
@@ -342,6 +341,9 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
     else {
 
         try {
+
+            const handle = req.params.handle
+            const body = req.body
 
             if (!validateMsg(body)) throw err;
 
@@ -372,6 +374,52 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
         } catch(err) {
             res.status(400).json( [{ description: "Invalid message data.", code: 400}])
         }
+    }  
+})
+
+app.put("/tripchanges/:handle", jsonParser, async (req, res) => {
+
+    if (!(await authorize(req.headers))) {
+        res.status(401).send("Unauthorized.")
+    }
+
+    else {
+
+        //try {
+
+            const handle = req.params.handle
+            const body = req.body
+
+            const tripChange = {
+                handle: handle,
+                username: body.username || '',
+                load_id: body.load_id || '',
+                timestamp: body.timestamp || '1000-01-01T00:00:00+00:00',
+                location: body.location || null,
+                type: body.type || '',
+                new_location: body.new_location || null,
+                stop_number: body.stop_number || null,
+                name: body.name || '',
+                address: body.address || '',
+                postal_code: body.postal_code || '',
+                state: body.state || '',
+                city: body.city || '',
+                crowd_sourced: body.crowd_sourced || null,
+                accuracy: body.accuracy || '',
+                error_code: body.error_code || '',
+                from_poi: body.from_poi || ''
+                
+            }
+            
+            await executeQuery(`INSERT INTO tripchanges (handle, username, load_id, timestamp, location, type, new_location, stop_number, name, address, postal_code, state, city, crowd_sourced, accuracy, error_code, from_poi) VALUES ('${tripChange.handle}', '${tripChange.username}', '${tripChange.load_id}', '${tripChange.timestamp}', '${JSON.stringify(tripChange.location)}', '${tripChange.type}', '${JSON.stringify(tripChange.new_location)}', ${tripChange.stop_number}, '${tripChange.name}', '${tripChange.address}', '${tripChange.postal_code}', '${tripChange.state}', '${tripChange.city}', ${tripChange.crowd_sourced}, '${tripChange.accuracy}', '${tripChange.error_code}', '${tripChange.from_poi}')`)
+
+
+            res.status(200).json( {handle: handle} )
+
+
+        // } catch(err) {
+        //     res.status(400).json( [{ description: "Invalid message data.", code: 400}])
+        // }
     }  
 })
 
