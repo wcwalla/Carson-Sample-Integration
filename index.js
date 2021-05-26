@@ -294,6 +294,42 @@ app.get('/driver_status', async (req, res) => {
     }
 })
 
+app.get('/todos', async (req, res) => {
+
+    if (!(await authorize(req.headers))) {
+        res.status(401).send("Unauthorized.")
+    }
+    else {
+
+        try {
+
+            todos = await executeQuery('SELECT * FROM TODOs')
+
+            for (const i in todos) {
+            
+                if (todos[i].properties) {
+                    properties = await executeQuery(`SELECT * FROM TODOProperties WHERE TODOProperties.id = ${todos[i].properties}`)
+                    properties = properties[0]
+
+                    delete properties.id
+                    properties = cleanObj(properties)
+                    todos[i].properties = properties
+                }
+
+                todos[i] = cleanObj(todos[i])
+
+        }
+
+            res.status(200).json(todos);
+
+        } catch (err) {
+            console.error(err);
+            res.status(400).send("Error " + err);
+        }
+        
+    }
+})
+
 app.put("/messages/:handle", jsonParser, async (req, res) => {
 
     const handle = req.params.handle
