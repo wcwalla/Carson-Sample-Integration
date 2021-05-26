@@ -347,7 +347,7 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
 
     
 
-    if (header["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
     res.status(401).send("Unauthorized.")
 
     else {
@@ -392,7 +392,7 @@ app.put("/messages/:handle", jsonParser, async (req, res) => {
 
 app.put("/tripchanges/:handle", jsonParser, async (req, res) => {
 
-    if (header["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
+    if (req.headers["eleos-platform-key"] != process.env.ELEOS_PLATFORM_KEY)
     res.status(401).send("Unauthorized.")
 
     else {
