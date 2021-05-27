@@ -66,7 +66,9 @@ app.get("/authenticate/:token", async (req, res) => {
             fullName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
             username = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
 
-            secret = 'hsd15f9tad2j1wd21j4a9'
+            secret = getSecret()
+
+            console.log(secret)
 
             encoded = jwt_encode(
                 {
@@ -79,7 +81,7 @@ app.get("/authenticate/:token", async (req, res) => {
             userObj = cleanObj(userObj)
 
             user = {
-                api_token: token,
+                api_token: encoded,
                 full_name: userObj.full_name
             }
 
@@ -570,4 +572,8 @@ cleanObj = (obj) => {
         }
     }
     return obj
+}
+
+getSecret = () => {
+    return Math.random().toString(36).substr(2);
 }
