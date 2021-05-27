@@ -80,8 +80,7 @@ app.get("/authenticate/:token", async (req, res) => {
       username =
         decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
 
-      //Generate a new random secret string
-      secret = getSecret();
+      secret = 'dj4r9dn3hue9dfjnx95n'
 
       //Generate a new token with the decoded username, full name, and new secret
       encoded = jwt_encode(
