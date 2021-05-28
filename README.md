@@ -18,3 +18,15 @@
 - PUT "/tripchanges/{handle}" : This service allows the Eleos Mobile Platform to transmit a change made to a trip to this backend system.
 
 ### For security reasons, the only route above accessible in browser is GET "/", since all the others require a valid Eleos platform key and user token. If you would like to see the service work in full, log in to the Eleos QA app with the user "CARSON".
+
+### Concepts/Tools I learned for this project: 
+
+- Postman
+- JavaScript
+- NodeJS
+- ExpressJS
+- PostgreSQL
+- Heroku
+- DBeaver
+- A little bit of HTML and Bootstrap
+- REST API
